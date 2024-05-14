@@ -857,6 +857,19 @@
         if (self.doneButtonTitleColor != nil)
             doneButton.tintColor = self.doneButtonTitleColor;
         
+        // Border color with E5E5E5 backgroound instead of blurred
+        NSString *borderColorHexString = @"E5E5E5";
+        unsigned rgbValue = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:borderColorHexString];
+        [scanner setScanLocation:0]; // bypass '#' character
+        [scanner scanHexInt:&rgbValue];
+
+        CGFloat red = ((rgbValue & 0xFF0000) >> 16) / 255.0;
+        CGFloat green = ((rgbValue & 0x00FF00) >> 8) / 255.0;
+        CGFloat blue = (rgbValue & 0x0000FF) / 255.0;
+
+        // Calculate grayscale value
+        CGFloat borderColorValue = 0.299 * red + 0.587 * green + 0.114 * blue;
         if (!_hideAllButtons) {
             [alertView addSubview:firstButton];
             [alertView addSubview:secondButton];
@@ -869,7 +882,7 @@
                                                                           firstButton.frame.origin.y - 2,
                                                                           alertViewFrame.size.width,
                                                                           2)];
-        firstSeparator.backgroundColor = [UIColor colorWithWhite:100.0f/255.0f alpha:1.0]; // set color as you want.
+        firstSeparator.backgroundColor = [UIColor colorWithWhite:borderColorValue alpha:1.0]; // set color as you want.
         if (_darkTheme)
             firstSeparator.backgroundColor = [UIColor colorWithWhite:58.0f/255.0f alpha:1.0];
         
@@ -882,26 +895,10 @@
                                                secondButton.frame.origin.y,
                                                2,
                                                45);
-        secondSeparator.backgroundColor = [UIColor colorWithWhite:100.0f/255.0f alpha:1.0]; // set color as you want.
+        
+        secondSeparator.backgroundColor = [UIColor colorWithWhite:borderColorValue alpha:1.0]; // set color as you want.
         if (_darkTheme)
             secondSeparator.backgroundColor = [UIColor colorWithWhite:58.0f/255.0f alpha:1.0];
-        
-        UIVisualEffect *blurEffect;
-        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-        if (_darkTheme)
-            blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-        
-        UIVisualEffectView *visualEffectView;
-        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.frame = firstSeparator.bounds;
-        visualEffectView.userInteractionEnabled = NO;
-        [firstSeparator addSubview:visualEffectView];
-        
-        UIVisualEffectView *visualEffectView2;
-        visualEffectView2 = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView2.frame = secondSeparator.bounds;
-        visualEffectView2.userInteractionEnabled = NO;
-        [secondSeparator addSubview:visualEffectView2];
         
         if (!_hideAllButtons && !_detachButtons && !_hideSeparatorLineView) {
             [alertView addSubview:firstSeparator];
